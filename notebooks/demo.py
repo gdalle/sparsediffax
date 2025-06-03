@@ -64,9 +64,9 @@ def _():
 @app.cell
 def _():
     import numpy as np
+    import jax
     import jax.numpy as jnp
     from jax.experimental import sparse
-    import jax
     import juliacall
     import juliapkg
     return jax, jnp, juliapkg, np, sparse
