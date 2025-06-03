@@ -51,29 +51,25 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""Import required packages from Python:""")
+    mo.md(r"""Import required packages from Python and Julia:""")
     return
 
 
 @app.cell
 def _():
     import marimo as mo
+    return (mo,)
 
+
+@app.cell
+def _():
     import numpy as np
     import jax.numpy as jnp
     from jax.experimental import sparse
     import jax
     import juliacall
     import juliapkg
-    return jax, jnp, juliapkg, mo, np, sparse
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(
-        r"""Install and import required packages from Julia ([`SparseMatrixColorings`](https://github.com/gdalle/SparseMatrixColorings.jl) and the `SparseArrays` standard library):"""
-    )
-    return
+    return jax, jnp, juliapkg, np, sparse
 
 
 @app.cell
@@ -148,9 +144,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""Here we perform a poor man's version of sparsity detection: computing the full dense Jacobian and checking which coefficients are non-zero. This is vulnerable to accidental zeros, unlike symbolic approaches like  [`jax2sympy`](https://github.com/johnviljoen/jax2sympy)."""
-    )
+    mo.md(r"""Here we perform a poor man's version of sparsity detection: computing the full dense Jacobian and checking which coefficients are non-zero. This is vulnerable to accidental zeros, unlike symbolic approaches like  [`jax2sympy`](https://github.com/johnviljoen/jax2sympy).""")
     return
 
 
@@ -168,9 +162,7 @@ def _(sparsity_pattern):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""In general, sparsity detection might be inefficient, but it only has to be performed once if the pattern is input-agnostic."""
-    )
+    mo.md(r"""In general, sparsity detection might be inefficient, but it only has to be performed once if the pattern is input-agnostic.""")
     return
 
 
@@ -182,9 +174,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""Coloring problems and algorithms are available through the Julia package [`SparseMatrixColorings`](https://github.com/gdalle/SparseMatrixColorings.jl). Here we demonstrate the simplest case: column coloring of a nonsymmetric matrix."""
-    )
+    mo.md(r"""Coloring problems and algorithms are available through the Julia package [`SparseMatrixColorings`](https://github.com/gdalle/SparseMatrixColorings.jl). Here we demonstrate the simplest case: column coloring of a nonsymmetric matrix.""")
     return
 
 
@@ -204,9 +194,7 @@ def _(jl):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""Translate the JAX [BCOO](https://docs.jax.dev/en/latest/jax.experimental.sparse.html#bcoo-data-structure) matrix into a Julia CSC matrix."""
-    )
+    mo.md(r"""Translate the JAX [BCOO](https://docs.jax.dev/en/latest/jax.experimental.sparse.html#bcoo-data-structure) matrix into a Julia CSC matrix.""")
     return
 
 
@@ -227,9 +215,7 @@ def _(jl_sparsity_pattern):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""Get a vector of 1-indexed colors from the Julia coloring routines:"""
-    )
+    mo.md(r"""Get a vector of 1-indexed colors from the Julia coloring routines:""")
     return
 
 
@@ -273,9 +259,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""For each color, sum the basis vectors of all the columns assigned to that color:"""
-    )
+    mo.md(r"""For each color, sum the basis vectors of all the columns assigned to that color:""")
     return
 
 
@@ -297,9 +281,7 @@ def _(basis_vectors):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""Evaluating JVPs with each of these basis vectors is sufficient to recover every nonzero coefficient:"""
-    )
+    mo.md(r"""Evaluating JVPs with each of these basis vectors is sufficient to recover every nonzero coefficient:""")
     return
 
 
@@ -314,9 +296,7 @@ def _(f, jax, jnp):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""The compressed Jacobian has one column per color, it can be evaluated with 2 JVPs instead of 5:"""
-    )
+    mo.md(r"""The compressed Jacobian has one column per color, it can be evaluated with 2 JVPs instead of 5:""")
     return
 
 
@@ -340,9 +320,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""Decompression works by associating each entry in the sparsity pattern to the corresponding value inside the compressed Jacobian:"""
-    )
+    mo.md(r"""Decompression works by associating each entry in the sparsity pattern to the corresponding value inside the compressed Jacobian:""")
     return
 
 
