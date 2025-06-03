@@ -1,3 +1,7 @@
+on:
+  push:
+    branches: ['main']  # Trigger on pushes to main branch
+    
 jobs:
     build:
         runs-on: ubuntu-latest
