@@ -1,2 +1,3 @@
 # sparsediffax
-Prototype for sparse automatic differentiation in JAX
+
+Prototype for sparse automatic differentiation in JAX + Julia
