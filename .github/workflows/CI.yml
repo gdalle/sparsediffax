@@ -27,4 +27,4 @@ jobs:
         uses: astral-sh/ruff-action@v3
 
       - name: Run Pytest
-        run: uv run pytest tests -v
+        run: uv run pytest tests -v --cov=sparsediffax
