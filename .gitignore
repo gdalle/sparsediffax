@@ -8,3 +8,4 @@ playground.py
 .coverage
 coverage.xml
 docs
+.vscode

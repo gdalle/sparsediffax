@@ -1,9 +1,10 @@
 import scipy.sparse as sp
 import jax
-from jax import Array
 import jax.numpy as jnp
 import jax.experimental.sparse as jsp
 import pysparsematrixcolorings as smc
+from jax import Array
+from typing import Callable
 
 # Preparation with coloring
 
@@ -11,7 +12,7 @@ import pysparsematrixcolorings as smc
 class _SparseDiff:
     def __init__(
         self,
-        sparsity_pattern,
+        sparsity_pattern: jsp.BCOO,
         structure: str,
         partition: str,
         order: str = "natural",
@@ -59,7 +60,7 @@ class _SparseDiff:
 # Compressed differentiation
 
 
-def _jacfwd_compressed(f, x: Array, basis_matrix: Array) -> Array:
+def _jacfwd_compressed(f: Callable, x: Array, basis_matrix: Array) -> Array:
     def _jvp(s):
         return jax.jvp(f, (x,), (s,))[1]
 
@@ -67,13 +68,13 @@ def _jacfwd_compressed(f, x: Array, basis_matrix: Array) -> Array:
     return jnp.transpose(Jt)
 
 
-def _jacrev_compressed(f, x: Array, basis_matrix: Array) -> Array:
+def _jacrev_compressed(f: Callable, x: Array, basis_matrix: Array) -> Array:
     y, vjp_fun = jax.vjp(f, x)
     (J,) = jax.vmap(vjp_fun, in_axes=0)(basis_matrix)
     return J
 
 
-def _hessian_compressed(f, x: Array, basis_matrix: Array) -> Array:
+def _hessian_compressed(f: Callable, x: Array, basis_matrix: Array) -> Array:
     def _hvp(s):
         return jax.jvp(jax.grad(f), (x,), (s,))[1]
 
@@ -84,7 +85,7 @@ def _hessian_compressed(f, x: Array, basis_matrix: Array) -> Array:
 # Full differentiation
 
 
-def jacfwd_sparse(f, sparsity_pattern):
+def jacfwd_sparse(f: Callable, sparsity_pattern: jsp.BCOO) -> Callable:
     prep = _SparseDiff(sparsity_pattern, structure="nonsymmetric", partition="column")
 
     def jacfwd_sparse_fun(x):
@@ -94,7 +95,7 @@ def jacfwd_sparse(f, sparsity_pattern):
     return jacfwd_sparse_fun
 
 
-def jacrev_sparse(f, sparsity_pattern):
+def jacrev_sparse(f: Callable, sparsity_pattern: jsp.BCOO) -> Callable:
     prep = _SparseDiff(sparsity_pattern, structure="nonsymmetric", partition="row")
 
     def jacrev_sparse_fun(x):
@@ -104,7 +105,7 @@ def jacrev_sparse(f, sparsity_pattern):
     return jacrev_sparse_fun
 
 
-def hessian_sparse(f, sparsity_pattern):
+def hessian_sparse(f: Callable, sparsity_pattern: jsp.BCOO) -> Callable:
     prep = _SparseDiff(sparsity_pattern, structure="symmetric", partition="column")
 
     def hessian_sparse_fun(x):
