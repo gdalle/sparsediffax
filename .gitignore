@@ -7,3 +7,4 @@ uv.lock
 playground.py
 .coverage
 coverage.xml
+docs
