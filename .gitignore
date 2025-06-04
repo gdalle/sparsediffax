@@ -2,3 +2,6 @@ __marimo__
 __pycache__
 .venv
 uv.lock
+.ruff_cache
+.pytest_cache
+playground.py
