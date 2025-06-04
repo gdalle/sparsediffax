@@ -11,5 +11,7 @@ This package is meant as an alternative to [sparsejac](https://github.com/mfschu
 - More efficient graph encodings and colorings thanks to the Julia library [SparseMatrixColorings.jl](https://github.com/gdalle/SparseMatrixColorings.jl)
 - Optimized symmetry-aware computation of sparse Hessians (although taking the sparse Jacobian of the gradient can also give good results in practice)
 
+See the [documentation](https://gdalle.github.io/sparsediffax) for details on the API.
+
 > [!WARNING]
 > This is a work in progress, it needs more docs and tests. Try at your own risk.
