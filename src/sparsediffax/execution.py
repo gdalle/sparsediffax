@@ -71,9 +71,6 @@ class SparseDiff:
         self.row_inds = jnp.array(row_inds)
         self.col_inds = jnp.array(col_inds)
 
-    def evaluate_compressed(self, f, x):
-        raise NotImplementedError("This method is implemented by subtypes")
-
     def decompress(self, B: Array):
         data = B[self.row_inds, self.col_inds]
         return jsp.BCOO((data, self.indices), shape=self.sparsity_pattern.shape)

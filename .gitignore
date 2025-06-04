@@ -5,3 +5,4 @@ uv.lock
 .ruff_cache
 .pytest_cache
 playground.py
+.coverage
