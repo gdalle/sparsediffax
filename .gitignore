@@ -6,3 +6,4 @@ uv.lock
 .pytest_cache
 playground.py
 .coverage
+coverage.xml
