@@ -2,12 +2,18 @@ r"""
 Prototype for sparse automatic differentiation in JAX + Julia
 """
 
-from .preparation import naive_jacobian_sparsity, naive_hessian_sparsity
-from .execution import SparseJacobian, SparseHessian
+from .detection import (
+    naive_jacfwd_sparsity,
+    naive_jacrev_sparsity,
+    naive_hessian_sparsity,
+)
+from .execution import jacfwd_sparse, jacrev_sparse, hessian_sparse
 
 __all__ = [
-    "naive_jacobian_sparsity",
+    "naive_jacfwd_sparsity",
+    "naive_jacrev_sparsity",
     "naive_hessian_sparsity",
-    "SparseJacobian",
-    "SparseHessian",
+    "jacfwd_sparse",
+    "jacrev_sparse",
+    "hessian_sparse",
 ]

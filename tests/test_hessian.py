@@ -12,6 +12,5 @@ def test_hessian():
     x = jnp.arange(1, n + 1, dtype=float)
     H = jax.hessian(f)(x)
     S = sd.naive_hessian_sparsity(f, x)
-    sparsehess = sd.SparseHessian(S)
-    Hs = sparsehess.evaluate(f, x)
+    Hs = sd.hessian_sparse(f, S)(x)
     assert jnp.isclose(Hs.todense(), H).all()

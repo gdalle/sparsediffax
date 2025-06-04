@@ -5,35 +5,15 @@ import jax.numpy as jnp
 import jax.experimental.sparse as jsp
 import pysparsematrixcolorings as smc
 
-
-def _jacfwd_compressed(f, x: Array, basis_matrix: Array) -> Array:
-    def _jvp(s):
-        return jax.jvp(f, (x,), (s,))[1]
-
-    Jt = jax.vmap(_jvp, in_axes=1)(basis_matrix)
-    return jnp.transpose(Jt)
+# Preparation with coloring
 
 
-def _jacrev_compressed(f, x: Array, basis_matrix: Array) -> Array:
-    y, vjp_fun = jax.vjp(f, x)
-    (J,) = jax.vmap(vjp_fun, in_axes=0)(basis_matrix)
-    return J
-
-
-def _hessian_compressed(f, x: Array, basis_matrix: Array) -> Array:
-    def _hvp(s):
-        return jax.jvp(jax.grad(f), (x,), (s,))[1]
-
-    Jt = jax.vmap(_hvp, in_axes=1)(basis_matrix)
-    return jnp.transpose(Jt)
-
-
-class SparseDiff:
+class _SparseDiff:
     def __init__(
         self,
         sparsity_pattern,
-        structure: str = "nonsymmetric",
-        partition: str = "column",
+        structure: str,
+        partition: str,
         order: str = "natural",
     ):
         assert isinstance(sparsity_pattern, jsp.BCOO)
@@ -75,39 +55,60 @@ class SparseDiff:
         data = B[self.row_inds, self.col_inds]
         return jsp.BCOO((data, self.indices), shape=self.sparsity_pattern.shape)
 
-    def evaluate(self, f, x: Array):
-        B = self.evaluate_compressed(f, x)
-        J = self.decompress(B)
-        return J
+
+# Compressed differentiation
 
 
-class SparseJacobian(SparseDiff):
-    def __init__(
-        self, sparsity_pattern, direction: str = "forward", order: str = "natural"
-    ):
-        super().__init__(
-            sparsity_pattern,
-            structure="nonsymmetric",
-            partition="column" if direction == "forward" else "row",
-            order=order,
-        )
-        self.direction = direction
+def _jacfwd_compressed(f, x: Array, basis_matrix: Array) -> Array:
+    def _jvp(s):
+        return jax.jvp(f, (x,), (s,))[1]
 
-    def evaluate_compressed(self, f, x: Array) -> Array:
-        if self.partition == "column":
-            return _jacfwd_compressed(f, x, self.basis_matrix.astype(x.dtype))
-        else:
-            return _jacrev_compressed(f, x, self.basis_matrix.astype(x.dtype))
+    Jt = jax.vmap(_jvp, in_axes=1)(basis_matrix)
+    return jnp.transpose(Jt)
 
 
-class SparseHessian(SparseDiff):
-    def __init__(self, sparsity_pattern, order: str = "natural"):
-        super().__init__(
-            sparsity_pattern,
-            structure="symmetric",
-            partition="column",
-            order=order,
-        )
+def _jacrev_compressed(f, x: Array, basis_matrix: Array) -> Array:
+    y, vjp_fun = jax.vjp(f, x)
+    (J,) = jax.vmap(vjp_fun, in_axes=0)(basis_matrix)
+    return J
 
-    def evaluate_compressed(self, f, x: Array) -> Array:
-        return _hessian_compressed(f, x, self.basis_matrix.astype(x.dtype))
+
+def _hessian_compressed(f, x: Array, basis_matrix: Array) -> Array:
+    def _hvp(s):
+        return jax.jvp(jax.grad(f), (x,), (s,))[1]
+
+    Jt = jax.vmap(_hvp, in_axes=1)(basis_matrix)
+    return jnp.transpose(Jt)
+
+
+# Full differentiation
+
+
+def jacfwd_sparse(f, sparsity_pattern):
+    prep = _SparseDiff(sparsity_pattern, structure="nonsymmetric", partition="column")
+
+    def jacfwd_sparse_fun(x):
+        B = _jacfwd_compressed(f, x, prep.basis_matrix.astype(x.dtype))
+        return prep.decompress(B)
+
+    return jacfwd_sparse_fun
+
+
+def jacrev_sparse(f, sparsity_pattern):
+    prep = _SparseDiff(sparsity_pattern, structure="nonsymmetric", partition="row")
+
+    def jacrev_sparse_fun(x):
+        B = _jacrev_compressed(f, x, prep.basis_matrix.astype(x.dtype))
+        return prep.decompress(B)
+
+    return jacrev_sparse_fun
+
+
+def hessian_sparse(f, sparsity_pattern):
+    prep = _SparseDiff(sparsity_pattern, structure="symmetric", partition="column")
+
+    def hessian_sparse_fun(x):
+        B = _hessian_compressed(f, x, prep.basis_matrix.astype(x.dtype))
+        return prep.decompress(B)
+
+    return hessian_sparse_fun
