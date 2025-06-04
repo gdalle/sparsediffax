@@ -1,1 +1,4 @@
 __marimo__
+__pycache__
+.venv
+uv.lock

@@ -1,0 +1,31 @@
+[project]
+name = "sparsediffax"
+version = "0.1.0"
+description = "Prototype for sparse automatic differentiation in JAX + Julia"
+readme = "README.md"
+authors = [
+    { name = "Guillaume Dalle", email = "22795598+gdalle@users.noreply.github.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "jax>=0.6.1",
+    "numpy>=2.2.6",
+    "pysparsematrixcolorings",
+    "scipy>=1.15.3",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+pysparsematrixcolorings = { git = "https://github.com/gdalle/pysparsematrixcolorings" }
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+    "pip>=25.1.1",
+    "pytest>=8.4.0",
+    "pytest-cov>=6.1.1",
+    "ruff>=0.11.12",
+]
