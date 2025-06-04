@@ -27,7 +27,7 @@ jobs:
         uses: astral-sh/ruff-action@v3
       
       - name: Run Ty
-        run: uv run ty check .
+        run: uv run ty check ./src
 
       - name: Run Pytest
         run: uv run pytest tests -v --cov --cov-report=xml
