@@ -29,10 +29,9 @@ class _SparseDiff:
 
         result = smc.compute_coloring(
             sparsity_pattern_scipy_coo,
-            structure=structure,
-            partition=partition,
-            order=order,
-            return_aux=True,
+            structure=smc.Structure(structure),
+            partition=smc.Partition(partition),
+            order=smc.Order(order),
         )
         colors, basis_matrix, (row_inds_scipy_csc, col_inds_scipy_csc) = result
 

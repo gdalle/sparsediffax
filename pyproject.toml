@@ -19,7 +19,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.uv.sources]
-pysparsematrixcolorings = { git = "https://github.com/gdalle/pysparsematrixcolorings" }
+pysparsematrixcolorings = { git = "https://github.com/gdalle/pysparsematrixcolorings", rev = "587573cfab38842b33a23460168ef8d9d7d4c053" }
 
 [dependency-groups]
 dev = [
